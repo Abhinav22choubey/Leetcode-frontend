@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import { registerUser } from "../authSlice";
+import {useSelector,useDispatch} from "react-redux";
 
 const schema = z.object({
   firstName: z.string().min(3, "Name is too short"),
@@ -93,7 +95,7 @@ function PasswordStrength({ password }) {
 export default function SignUp() {
 
   const navigate = useNavigate();
-
+  const dispatch=useDispatch();
   const {
     register,
     handleSubmit,
@@ -102,21 +104,18 @@ export default function SignUp() {
   } = useForm({
     resolver:zodResolver(schema)
   });
-
+  const [loading,setLoading]=useState(false);
   const password = watch("password") || "";
-
-  const [loading,setLoading] = useState(false);
-
   const submittedForm = (data)=>{
-    console.log(data);
     setLoading(true);
-
-    setTimeout(()=>{
+    dispatch(registerUser(data));
+    setTimeout(() => {
       setLoading(false);
-    },2000);
+    }, 2000);
   };
 
   return (
+    <div className="flex items-center justify-center min-h-screen">
     <motion.div
       variants={pageVariants}
       initial="initial"
@@ -196,5 +195,6 @@ export default function SignUp() {
 
       </div>
     </motion.div>
+    </div>
   );
 }

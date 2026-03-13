@@ -10,9 +10,11 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosMain.post("/user/register", userData);
-      return response.data.user;
+      return response.data.data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(
+        error.response?.data?.message || error.response?.data || error.message,
+      );
     }
   },
 );
@@ -21,9 +23,11 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const resposne = await axiosMain.post("/user/login", credentials);
-      return response.data.user;
+      return response.data.data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(
+        error.response?.data?.message || error.response?.data || error.message,
+      );
     }
   },
 );
@@ -32,9 +36,11 @@ export const checkAuth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const resposne = await axiosMain.get("/user/getAuth");
-      return response.data.user;
+      return response.data.data;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(
+        error.response?.data?.message || error.response?.data || error.message,
+      );
     }
   },
 );
@@ -45,7 +51,9 @@ export const logoutUser = createAsyncThunk(
       await axiosMain.get("/user/logout");
       return null;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(
+        error.response?.data?.message || error.response?.data || error.message,
+      );
     }
   },
 );

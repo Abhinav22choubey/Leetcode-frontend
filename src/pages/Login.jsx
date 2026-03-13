@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import { useSelector,useDispatch } from "react-redux";
+import { loginUser } from "../authSlice";
 
 const schema = z.object({
   emailId: z.string().email("Enter a valid email"),
@@ -71,7 +73,7 @@ function InputField({ label, type, placeholder, register, name, error }) {
 
 export default function Login() {
   const navigate = useNavigate();
-
+  const dispatch=useDispatch();
   const {
     register,
     handleSubmit,
@@ -84,14 +86,14 @@ export default function Login() {
 
   const submittedForm = (data) => {
     setLoading(true);
-    console.log(data);
-
+    dispatch(loginUser(data));
     setTimeout(() => {
       setLoading(false);
     }, 2000);
   };
 
   return (
+    <div className="flex items-center justify-center min-h-screen">
     <motion.div
       variants={pageVariants}
       initial="initial"
@@ -160,5 +162,6 @@ export default function Login() {
 
       </div>
     </motion.div>
+    </div>
   );
 }

@@ -21,7 +21,7 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <div className="min-h-screen bg-[#080B14] flex items-center justify-center overflow-hidden relative">
+    <div className="min-h-screen bg-[#080B14]  overflow-hidden relative">
       
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
