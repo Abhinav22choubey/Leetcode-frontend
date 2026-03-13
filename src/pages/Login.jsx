@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../authSlice";
 
 const schema = z.object({
@@ -73,7 +73,7 @@ function InputField({ label, type, placeholder, register, name, error }) {
 
 export default function Login() {
   const navigate = useNavigate();
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -82,86 +82,85 @@ export default function Login() {
     resolver: zodResolver(schema),
   });
 
-  const [loading, setLoading] = useState(false);
-
+  const loading = useSelector((state) => state.auth.loading);
+  const error = useSelector((state) => state.auth.error);
   const submittedForm = (data) => {
-    setLoading(true);
+    console.log("User Logged in")
     dispatch(loginUser(data));
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-    <motion.div
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="w-full max-w-md px-4"
-    >
-      <div className="relative bg-white/[0.03] border border-white/[0.08] rounded-2xl p-8 backdrop-blur-xl shadow-2xl shadow-black/40">
+      <motion.div
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="w-full max-w-md px-4"
+      >
+        <div className="relative bg-white/[0.03] border border-white/[0.08] rounded-2xl p-8 backdrop-blur-xl shadow-2xl shadow-black/40">
 
-        {/* Heading */}
-        <motion.div variants={fadeUp} className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">
-            Welcome back
-          </h1>
-          <p className="text-sm text-slate-500">
-            Sign in to continue
-          </p>
-        </motion.div>
+          {/* Heading */}
+          <motion.div variants={fadeUp} className="mb-8">
+            <h1 className="text-2xl font-bold text-white mb-1">
+              Welcome back
+            </h1>
+            <p className="text-sm text-slate-500">
+              Sign in to continue
+            </p>
+          </motion.div>
 
-        <form onSubmit={handleSubmit(submittedForm)} className="space-y-5">
+          <form onSubmit={handleSubmit(submittedForm)} className="space-y-5">
 
-          <InputField
-            label="Email"
-            type="email"
-            placeholder="you@company.com"
-            register={register}
-            name="emailId"
-            error={errors.emailId}
-          />
+            <InputField
+              label="Email"
+              type="email"
+              placeholder="you@company.com"
+              register={register}
+              name="emailId"
+              error={errors.emailId}
+            />
 
-          <InputField
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            register={register}
-            name="password"
-            error={errors.password}
-          />
+            <InputField
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              register={register}
+              name="password"
+              error={errors.password}
+            />
 
-          {/* Button */}
-          <motion.button
+            {/* Button */}
+            <motion.button
+              variants={fadeUp}
+              type="submit"
+              disabled={loading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </motion.button>
+            {error && (
+              <p className="text-red-400 text-xs mt-1">{error}</p>
+            )}
+          </form>
+
+          <motion.p
             variants={fadeUp}
-            type="submit"
-            disabled={loading}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold"
+            className="text-center text-sm text-slate-500 mt-6"
           >
-            {loading ? "Signing in..." : "Sign in"}
-          </motion.button>
+            New here?{" "}
+            <button
+              onClick={() => navigate("/signup")}
+              className="text-indigo-400 hover:text-indigo-300 font-semibold"
+            >
+              Create account →
+            </button>
+          </motion.p>
 
-        </form>
-
-        <motion.p
-          variants={fadeUp}
-          className="text-center text-sm text-slate-500 mt-6"
-        >
-          New here?{" "}
-          <button
-            onClick={() => navigate("/signup")}
-            className="text-indigo-400 hover:text-indigo-300 font-semibold"
-          >
-            Create account →
-          </button>
-        </motion.p>
-
-      </div>
-    </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 }

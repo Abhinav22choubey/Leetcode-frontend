@@ -4,8 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import { registerUser } from "../authSlice";
+import { registerUser,authSlice} from "../authSlice";
 import {useSelector,useDispatch} from "react-redux";
+
 
 const schema = z.object({
   firstName: z.string().min(3, "Name is too short"),
@@ -104,14 +105,11 @@ export default function SignUp() {
   } = useForm({
     resolver:zodResolver(schema)
   });
-  const [loading,setLoading]=useState(false);
+  const loading=useSelector((state)=>state.auth.loading);
   const password = watch("password") || "";
   const submittedForm = (data)=>{
-    setLoading(true);
     dispatch(registerUser(data));
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+   console.log("User Registered");
   };
 
   return (

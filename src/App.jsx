@@ -1,19 +1,32 @@
-import { Routes, Route, useLocation } from "react-router";
+import { Routes, Route, useLocation,Navigate } from "react-router";
 import { AnimatePresence } from "framer-motion";
-
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import {authSlice, checkAuth} from "./authSlice"
+import { useSelector,useDispatch } from "react-redux";
+import { useEffect } from "react";
+import Navbar from "./common/navbar";
 
 function AnimatedRoutes() {
   const location = useLocation();
-
+  const dispatch=useDispatch();
+  useEffect(()=>{
+    dispatch(checkAuth());
+  },[])
+  const {loading,isAuthenticated}=useSelector((state)=>state.auth)
+   if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>;
+  }
   return (
     <AnimatePresence mode="wait" initial={false}>
+      <Navbar/>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/" element={isAuthenticated?<HomePage />:<Navigate to="/login"/>} />
+        <Route path="/login" element={isAuthenticated?<Navigate to="/"/>:<Login />} />
+        <Route path="/signup" element={isAuthenticated? <Navigate to="/"/>:<SignUp />} />
       </Routes>
     </AnimatePresence>
   );

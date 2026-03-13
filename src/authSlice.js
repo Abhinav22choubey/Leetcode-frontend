@@ -22,7 +22,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const resposne = await axiosMain.post("/user/login", credentials);
+      const response = await axiosMain.post("/user/login", credentials);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -35,7 +35,7 @@ export const checkAuth = createAsyncThunk(
   "auth/check",
   async (_, { rejectWithValue }) => {
     try {
-      const resposne = await axiosMain.get("/user/getAuth");
+      const response = await axiosMain.get("/user/getAuth");
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -48,7 +48,7 @@ export const logoutUser = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
-      await axiosMain.get("/user/logout");
+      await axiosMain.post("/user/logout");
       return null;
     } catch (error) {
       return rejectWithValue(
@@ -58,7 +58,7 @@ export const logoutUser = createAsyncThunk(
   },
 );
 
-const authSlice = createSlice({
+export const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
@@ -128,7 +128,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
-      .addCase(logoutUser.rejected, (state) => {
+      .addCase(logoutUser.rejected, (state,action) => {
         state.loading = false;
         state.error = action.payload?.message || "Something went wrong";
         state.user = null;
@@ -136,5 +136,3 @@ const authSlice = createSlice({
       });
   },
 });
-
-export default authSlice.reducer;
