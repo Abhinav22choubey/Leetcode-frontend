@@ -53,7 +53,7 @@ const ProblemRow = ({ problem, index }) => {
 
       {/* Difficulty */}
       <div className="w-full md:w-24 flex justify-end">
-        <DifficultyBadge level={problem.difficulty} />
+        <DifficultyBadge level={problem.difficultyLevel} />
       </div>
     </motion.div>
   );
