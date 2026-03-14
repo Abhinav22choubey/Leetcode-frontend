@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FiltersBar from '../components/FiltersBar';
 import ProblemsTable from '../components/ProblemTable';
 import axiosMain from "../utils/axios"
+import { useSelector } from "react-redux"
 
 // Dummy Data
 // const INITIAL_PROBLEMS = [
@@ -32,7 +33,8 @@ const Problems = () => {
     const [filterStatus, setFilterStatus] = useState("All"); // All, Solved
     const [filterDifficulty, setFilterDifficulty] = useState("All");
     const [selectedTag, setSelectedTag] = useState("All");
-    const getProblem = async () => {
+    const [solveProblem, setSolveProblem] = useState([]);
+    const getAllProblem = async () => {
         try {
             const response = await axiosMain.get("problem/getAllproblem");
             setINITIAL_PROBLEMS(response.data);
@@ -41,18 +43,43 @@ const Problems = () => {
             console.log(err.message);
         }
     }
+    // adding later
+    const getsolvedProblem = async () => {
+        try {
+            const response = await axiosMain.get("problem/problemSolvedByUser");
+            const solved=response.data.map((p)=>p._id);
+            console.log(solved);
+            setSolveProblem(solved);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
     useEffect(() => {
-        getProblem();
+        getAllProblem();
+        getsolvedProblem();
     }, [])
     const filteredProblems = useMemo(() => {
-        return INITIAL_PROBLEMS.filter(problem => {
-            const statusMatch = filterStatus === "All" || (filterStatus === "Solved" && problem.isSolved);
-            const difficultyMatch = filterDifficulty === "All" || problem.difficultyLevel === filterDifficulty;
-            const tagMatch = selectedTag === "All" || problem.tags.includes(selectedTag);
-            return statusMatch && difficultyMatch && tagMatch;
-        });
-    }, [INITIAL_PROBLEMS,filterStatus, filterDifficulty, selectedTag]);
+        return INITIAL_PROBLEMS
+            .map(problem => ({
+                ...problem,
+                isSolved: solveProblem.includes(problem._id)
+            }))
+            .filter(problem => {
+                const statusMatch =
+                    filterStatus === "All" ||
+                    (filterStatus === "Solved" && problem.isSolved);
 
+                const difficultyMatch =
+                    filterDifficulty === "All" ||
+                    problem.difficultyLevel === filterDifficulty;
+
+                const tagMatch =
+                    selectedTag === "All" ||
+                    problem.tags.includes(selectedTag);
+
+                return statusMatch && difficultyMatch && tagMatch;
+            });
+    }, [INITIAL_PROBLEMS, solveProblem, filterStatus, filterDifficulty, selectedTag]);
     return (
         <div className="min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 pt-24">
             <div className="max-w-6xl mx-auto space-y-8">
