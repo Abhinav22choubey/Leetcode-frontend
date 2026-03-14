@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSelector,useDispatch } from "react-redux";
-import {User} from 'lucide-react';
+import { useSelector, useDispatch } from "react-redux";
+import { User } from 'lucide-react';
 import { loginUser, logoutUser } from "../authSlice";
+import { useNavigate } from "react-router";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const dropdownRef = useRef(null);
-    const {loading,isAuthenticated,user}=useSelector((state)=>state.auth)
+  const { loading, isAuthenticated, user } = useSelector((state) => state.auth)
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -18,10 +20,11 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  const handlelogout=()=>{
-      dispatch(logoutUser());
-      console.log("User Logout Successfully");
+  const handlelogout = () => {
+    dispatch(logoutUser());
+    console.log("User Logout Successfully");
   }
+
   return (
     <nav className="bg-gray-900 text-white px-6 py-4 flex justify-between items-center shadow-2xl relative z-50">
       {/* Left Section: Logo */}
@@ -30,13 +33,13 @@ const Navbar = () => {
         whileTap={{ scale: 0.95 }}
         className="text-2xl font-bold text-yellow-400 cursor-pointer tracking-tight"
       >
-        LeetCode
+        <button onClick={()=>{navigate("/")}}> LeetCode</button>
       </motion.div>
 
       {/* Right Section: Auth UI */}
       <div className="flex items-center gap-4">
         {!isAuthenticated ? (
-          <button className="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition duration-200 font-medium">
+          <button onClick={() => { navigate("/login") }} className="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition duration-200 font-medium">
             Login
           </button>
         ) : (
@@ -49,7 +52,7 @@ const Navbar = () => {
               className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md transition duration-200 border border-gray-700"
             >
               <span className="font-medium">{user.firstName}</span>
-              <User size={14}/>
+              <User size={14} />
             </motion.button>
 
             {/* Dropdown Menu */}
@@ -69,7 +72,7 @@ const Navbar = () => {
                     <span className="text-sm">Profile</span>
                   </button>
                   <hr className="border-gray-700 my-1" />
-                  <button 
+                  <button
                     className="w-full text-left px-4 py-2.5 hover:bg-red-500/10 text-red-400 transition-colors duration-150 flex items-center gap-2"
                     onClick={handlelogout}
                   >

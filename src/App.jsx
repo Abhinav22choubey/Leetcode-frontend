@@ -24,7 +24,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait" initial={false}>
       <Navbar/>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={isAuthenticated?<HomePage />:<Navigate to="/login"/>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={isAuthenticated?<Navigate to="/"/>:<Login />} />
         <Route path="/signup" element={isAuthenticated? <Navigate to="/"/>:<SignUp />} />
       </Routes>
