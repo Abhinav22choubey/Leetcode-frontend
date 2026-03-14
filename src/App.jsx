@@ -1,32 +1,51 @@
-import { Routes, Route, useLocation,Navigate } from "react-router";
+import { Routes, Route, useLocation, Navigate } from "react-router";
 import { AnimatePresence } from "framer-motion";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import {authSlice, checkAuth} from "./authSlice"
-import { useSelector,useDispatch } from "react-redux";
+import { authSlice, checkAuth } from "./authSlice"
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import Navbar from "./common/navbar";
+import Problems from "./pages/Problmes";
+
+function ProtectedRoute({ children }) {
+  const { loading, isAuthenticated } = useSelector((state) => state.auth);
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const dispatch=useDispatch();
-  useEffect(()=>{
+  const dispatch = useDispatch();
+  useEffect(() => {
     dispatch(checkAuth());
-  },[])
-  const {loading,isAuthenticated}=useSelector((state)=>state.auth)
-   if (loading) {
+  }, [dispatch])
+  const { loading, isAuthenticated } = useSelector((state) => state.auth)
+  if (loading) {
     return <div className="min-h-screen flex items-center justify-center">
       <span className="loading loading-spinner loading-lg"></span>
     </div>;
   }
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <Navbar/>
+      <Navbar />
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={isAuthenticated?<Navigate to="/"/>:<Login />} />
-        <Route path="/signup" element={isAuthenticated? <Navigate to="/"/>:<SignUp />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+        <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <SignUp />} />
+        <Route
+          path="/problems"
+          element={
+            <ProtectedRoute>
+              <Problems />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -35,7 +54,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <div className="min-h-screen bg-[#080B14]  overflow-hidden relative">
-      
+
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-900/30 rounded-full blur-3xl" />
