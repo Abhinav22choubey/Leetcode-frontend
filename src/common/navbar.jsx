@@ -71,6 +71,10 @@ const Navbar = () => {
                   <button className="w-full text-left px-4 py-2.5 hover:bg-gray-700 transition-colors duration-150 flex items-center gap-2">
                     <span className="text-sm">Profile</span>
                   </button>
+                  <button onClick={()=>{navigate('/problems')}} className="w-full text-left px-4 py-2.5 hover:bg-gray-700 transition-colors duration-150 flex items-center gap-2">
+                    <span className="text-sm">
+                      All Problems</span>
+                  </button>
                   <hr className="border-gray-700 my-1" />
                   <button
                     className="w-full text-left px-4 py-2.5 hover:bg-red-500/10 text-red-400 transition-colors duration-150 flex items-center gap-2"

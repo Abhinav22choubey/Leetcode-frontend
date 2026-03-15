@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronDown, FiFilter, FiCheckCircle } from 'react-icons/fi';
-
+import { useSelector } from 'react-redux';
+import {useNavigate} from "react-router"
 const Dropdown = ({ label, options, current, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+ 
   return (
     <div className="relative">
       <button
@@ -48,7 +49,8 @@ const Dropdown = ({ label, options, current, onSelect }) => {
 const FiltersBar = ({ status, setStatus, difficulty, setDifficulty, tag, setTag }) => {
   const tags = ["All", "Array", "String", "DP", "Hash Table", "Binary Search", "Tree", "Graph", "Greedy", "Backtracking"];
   const difficulties = ["All", "Easy", "Medium", "Hard"];
-
+ const role=useSelector((state)=>state.auth.user.role);
+ const navigate =useNavigate();
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -84,6 +86,9 @@ const FiltersBar = ({ status, setStatus, difficulty, setDifficulty, tag, setTag 
         <Dropdown options={difficulties} current={difficulty} onSelect={setDifficulty} />
       </div>
 
+      {role==="admin"&&(<div className="ml-auto hidden lg:block">
+        <button onClick={()=>{navigate('/createProblem')}} className='px-4 py-1.5 rounded-lg text-sm font-medium  bg-blue-600 text-white shadow-lg shadow-blue-900/20'>Create Problem</button>
+      </div>)}
       {/* Results Count */}
       <div className="ml-auto hidden lg:block">
         <span className="text-slate-500 text-sm italic">Showing dynamic results...</span>

@@ -5,11 +5,12 @@ import CountUp from 'react-countup';
 import { useInView } from 'react-intersection-observer';
 import FloatingBackground from "../components/floatingParticle"
 import HeroCodeEditor from "../components/animatedCodeEditor"
+import {useNavigate} from "react-router"
 
 export default function HomePage() {
 
     const { scrollYProgress } = useScroll()
-
+    const navigate =useNavigate();
     // raw scroll movement
     const rawX = useTransform(scrollYProgress, [0, 1], [0, -1200])
 
@@ -49,7 +50,7 @@ export default function HomePage() {
                                 Start Solving
                             </button>
 
-                            <button className="px-8 py-4 border border-slate-700 hover:bg-slate-800 rounded-full font-bold transition-all">
+                            <button onClick={()=>{navigate('/problems')}} className="px-8 py-4 border border-slate-700 hover:bg-slate-800 rounded-full font-bold transition-all">
                                 Explore Problems
                             </button>
 

@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import Navbar from "./common/navbar";
 import Problems from "./pages/Problmes";
+import CreateProblem from "./pages/CreateProblem"
 
 function ProtectedRoute({ children }) {
   const { loading, isAuthenticated } = useSelector((state) => state.auth);
@@ -43,6 +44,14 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <Problems />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/createProblem"
+          element={
+            <ProtectedRoute>
+              <CreateProblem/>
             </ProtectedRoute>
           }
         />

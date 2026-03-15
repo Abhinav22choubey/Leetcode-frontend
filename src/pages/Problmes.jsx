@@ -38,17 +38,14 @@ const Problems = () => {
         try {
             const response = await axiosMain.get("problem/getAllproblem");
             setINITIAL_PROBLEMS(response.data);
-            console.log(response);
         } catch (err) {
             console.log(err.message);
         }
     }
-    // adding later
     const getsolvedProblem = async () => {
         try {
             const response = await axiosMain.get("problem/problemSolvedByUser");
-            const solved=response.data.map((p)=>p._id);
-            console.log(solved);
+            const solved=response.data.map((p)=>p._id);          
             setSolveProblem(solved);
         } catch (err) {
             console.log(err.message);
@@ -102,6 +99,7 @@ const Problems = () => {
                         difficulty={filterDifficulty} setDifficulty={setFilterDifficulty}
                         tag={selectedTag} setTag={setSelectedTag}
                     />
+                    <button></button>
                 </div>
 
                 {/* Table Section */}
