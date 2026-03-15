@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -32,17 +32,33 @@ const ProblemDetailPage = ({
     ]
   } 
 }) => {
+
   const { title, description, difficultyLevel, tags, visibleTestCases, startCode, referenceSolution } = problemData;
-  
+
   const [selectedLang, setSelectedLang] = useState(startCode[0].language);
   const [editorCode, setEditorCode] = useState(startCode[0].code);
   const [activeTab, setActiveTab] = useState('testcase');
   const [showRefSolution, setShowRefSolution] = useState(false);
 
-  // Sync editor when language changes
+  const editorRef = useRef(null);
+  const monacoRef = useRef(null);
+
+  const handleEditorDidMount = (editor, monaco) => {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+  };
+
+  const runCode = () => {
+    if (!editorRef.current) return;
+    const code = editorRef.current.getValue();
+    console.log("Running Code:\n", code);
+  };
+
   useEffect(() => {
     const langData = startCode.find(c => c.language === selectedLang);
-    if (langData) setEditorCode(langData.code);
+    if (langData && editorRef.current) {
+      editorRef.current.setValue(langData.code);
+    }
   }, [selectedLang, startCode]);
 
   const difficultyStyles = {
@@ -54,7 +70,6 @@ const ProblemDetailPage = ({
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-[#0f172a] text-slate-200 overflow-hidden">
       
-      {/* LEFT SIDE: Problem Information (45% Width) */}
       <div className="w-full lg:w-[45%] h-full lg:h-screen overflow-y-auto border-r border-slate-800 custom-scrollbar">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
@@ -62,7 +77,7 @@ const ProblemDetailPage = ({
           transition={{ duration: 0.5 }}
           className="p-6 space-y-8"
         >
-          {/* Header Section */}
+
           <section className="space-y-4">
             <h1 className="text-3xl font-bold tracking-tight text-white">{title}</h1>
             <div className="flex flex-wrap items-center gap-3">
@@ -81,7 +96,6 @@ const ProblemDetailPage = ({
             </div>
           </section>
 
-          {/* Description Section */}
           <motion.section 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,7 +107,6 @@ const ProblemDetailPage = ({
             </div>
           </motion.section>
 
-          {/* Test Cases Section */}
           <section className="space-y-4">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <HiTerminal className="text-blue-400" /> Visible Test Cases
@@ -113,6 +126,7 @@ const ProblemDetailPage = ({
                       <HiClipboardCopy className="text-slate-400" />
                     </button>
                   </div>
+
                   <div className="space-y-3 font-mono text-sm">
                     <div>
                       <p className="text-slate-500 text-xs mb-1">Input:</p>
@@ -122,19 +136,20 @@ const ProblemDetailPage = ({
                       <p className="text-slate-500 text-xs mb-1">Output:</p>
                       <pre className="bg-slate-950 p-2 rounded border border-slate-800 text-emerald-400">{tc.output}</pre>
                     </div>
+
                     {tc.explanation && (
                       <div>
                         <p className="text-slate-500 text-xs mb-1">Explanation:</p>
                         <p className="text-slate-400 italic text-xs">{tc.explanation}</p>
                       </div>
                     )}
+
                   </div>
                 </motion.div>
               ))}
             </div>
           </section>
 
-          {/* Reference Solution Section */}
           <section className="pb-10">
             <button 
               onClick={() => setShowRefSolution(!showRefSolution)}
@@ -142,11 +157,12 @@ const ProblemDetailPage = ({
             >
               <HiCode className="text-xl" />
               <span className="font-semibold">View Reference Solution</span>
+
               <motion.div animate={{ rotate: showRefSolution ? 180 : 0 }} className="ml-auto">
                 <HiChevronDown />
               </motion.div>
             </button>
-            
+
             <AnimatePresence>
               {showRefSolution && (
                 <motion.div 
@@ -160,21 +176,27 @@ const ProblemDetailPage = ({
                     theme="vs-dark"
                     language={referenceSolution[0].language}
                     value={referenceSolution[0].code}
-                    options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13, padding: { top: 16 } }}
+                    options={{
+                      readOnly: true,
+                      minimap: { enabled: false },
+                      fontSize: 13,
+                      padding: { top: 16 }
+                    }}
                   />
                 </motion.div>
               )}
             </AnimatePresence>
+
           </section>
         </motion.div>
       </div>
 
-      {/* RIGHT SIDE: Editor Section (55% Width) */}
       <div className="w-full lg:w-[55%] flex flex-col h-screen bg-[#0e1525]">
-        
-        {/* Editor Toolbar */}
+
         <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-[#0f172a]">
+
           <div className="flex items-center gap-4">
+
             <div className="relative group">
               <select 
                 value={selectedLang}
@@ -189,27 +211,27 @@ const ProblemDetailPage = ({
               </select>
               <HiChevronDown className="absolute right-2 top-2.5 pointer-events-none text-slate-400" />
             </div>
+
             <button 
               onClick={() => {
                 const original = startCode.find(c => c.language === selectedLang);
-                setEditorCode(original.code);
+                if (editorRef.current) editorRef.current.setValue(original.code);
               }}
               className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-md transition-all"
-              title="Reset Code"
             >
               <HiRefresh />
             </button>
+
           </div>
         </div>
 
-        {/* Monaco Editor */}
         <div className="flex-grow relative">
           <Editor
             height="100%"
             theme="vs-dark"
             language={selectedLang}
-            value={editorCode}
-            onChange={(value) => setEditorCode(value)}
+            defaultValue={editorCode}
+            onMount={handleEditorDidMount}
             options={{
               fontSize: 14,
               minimap: { enabled: false },
@@ -222,8 +244,8 @@ const ProblemDetailPage = ({
           />
         </div>
 
-        {/* Output Panel / Console */}
         <div className="h-1/3 border-t border-slate-800 flex flex-col bg-[#0f172a]">
+
           <div className="flex items-center gap-6 px-6 py-2 border-b border-slate-800 text-sm">
             <button 
               onClick={() => setActiveTab('testcase')}
@@ -231,6 +253,7 @@ const ProblemDetailPage = ({
             >
               Testcase
             </button>
+
             <button 
               onClick={() => setActiveTab('result')}
               className={`pb-2 transition-colors ${activeTab === 'result' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-500'}`}
@@ -238,18 +261,26 @@ const ProblemDetailPage = ({
               Result
             </button>
           </div>
+
           <div className="flex-grow p-4 font-mono text-sm overflow-y-auto bg-[#0a0f1d]">
             {activeTab === 'testcase' ? (
               <div className="space-y-4">
+
                 <div className="flex flex-wrap gap-2">
                   {visibleTestCases.map((_, i) => (
-                    <button key={i} className="px-3 py-1 bg-slate-800 rounded-md hover:bg-slate-700 transition-colors">Case {i+1}</button>
+                    <button key={i} className="px-3 py-1 bg-slate-800 rounded-md hover:bg-slate-700 transition-colors">
+                      Case {i+1}
+                    </button>
                   ))}
                 </div>
+
                 <div className="text-slate-400">
                   <p className="mb-2 text-xs uppercase">Input</p>
-                  <pre className="bg-slate-900/50 p-3 rounded-lg border border-slate-800">{visibleTestCases[0].input}</pre>
+                  <pre className="bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                    {visibleTestCases[0].input}
+                  </pre>
                 </div>
+
               </div>
             ) : (
               <div className="flex items-center justify-center h-full text-slate-600 italic">
@@ -258,41 +289,28 @@ const ProblemDetailPage = ({
             )}
           </div>
 
-          {/* Action Buttons Footer */}
           <div className="p-4 border-t border-slate-800 bg-[#0f172a] flex justify-end gap-3">
+
             <motion.button 
-              whileHover={{ scale: 1.02, boxShadow: "0 0 15px rgba(59, 130, 246, 0.2)" }}
+              onClick={runCode}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg transition-all border border-slate-700"
+              className="flex items-center gap-2 px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg border border-slate-700"
             >
-              <HiPlay className="text-lg" /> Run Code
+              <HiPlay /> Run Code
             </motion.button>
+
             <motion.button 
-              whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(34, 197, 94, 0.3)" }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 px-8 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-lg shadow-lg shadow-emerald-900/20 transition-all"
+              className="flex items-center gap-2 px-8 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-lg"
             >
-              <HiCloudUpload className="text-lg" /> Submit
+              <HiCloudUpload /> Submit
             </motion.button>
+
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #0f172a;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #334155;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #475569;
-        }
-      `}</style>
     </div>
   );
 };
