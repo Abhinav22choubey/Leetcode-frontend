@@ -7,9 +7,9 @@ import { authSlice, checkAuth } from "./authSlice"
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import Navbar from "./common/navbar";
-import Problems from "./pages/Problmes";
+import Problems from "./pages/Problems";
 import CreateProblem from "./pages/CreateProblem"
-
+import ProblemDetail from "./pages/ProblemDetail"
 function ProtectedRoute({ children }) {
   const { loading, isAuthenticated } = useSelector((state) => state.auth);
   if (!isAuthenticated) {
@@ -52,6 +52,14 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <CreateProblem/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/problems/:id"
+          element={
+            <ProtectedRoute>
+              <ProblemDetail/>
             </ProtectedRoute>
           }
         />

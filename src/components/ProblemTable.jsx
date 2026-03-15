@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiCheckCircle, FiCircle } from 'react-icons/fi';
-
+import axiosMain from '../utils/axios';
+import {useNavigate} from "react-router"
 const DifficultyBadge = ({ level }) => {
   const styles = {
     Easy: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
@@ -60,6 +61,14 @@ const ProblemRow = ({ problem, index }) => {
 };
 
 const ProblemsTable = ({ problems }) => {
+
+  const navigate =useNavigate();
+
+  const handleroute=(id)=>{
+    navigate(`${id}`);
+  }
+
+  // console.log(problems);
   return (
     <div className="bg-slate-900/40 rounded-2xl border border-slate-800 overflow-hidden backdrop-blur-sm">
       {/* Desktop Header */}
@@ -74,7 +83,7 @@ const ProblemsTable = ({ problems }) => {
       <div className="divide-y divide-slate-800/50">
         {problems.length > 0 ? (
           problems.map((problem, idx) => (
-            <ProblemRow key={problem.id} problem={problem} index={idx} />
+            <button onClick={()=>{handleroute(problem._id)}} className='min-w-full text-left'><ProblemRow key={problem.id} problem={problem} index={idx} /></button>
           ))
         ) : (
           <div className="p-12 text-center text-slate-500">

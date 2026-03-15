@@ -38,6 +38,7 @@ const Problems = () => {
         try {
             const response = await axiosMain.get("problem/getAllproblem");
             setINITIAL_PROBLEMS(response.data);
+            // console.log(response.data);
         } catch (err) {
             console.log(err.message);
         }
