@@ -15,13 +15,14 @@ import {
   HiCheckCircle,
   HiXCircle,
 } from 'react-icons/hi';
-
+import SubmissionResult from '../components/Result';
 
 const ProblemDetailPage = () => {
-
+  
   const { id } = useParams();
-
+  
   const [problemData, setProblemData] = useState({});
+  const [submissionResult, setSubmissionResult] = useState(null);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -81,6 +82,17 @@ const ProblemDetailPage = () => {
   const handleTest = (i) => {
     setActiveTest(i);
   }
+  const submitCode = async () => {
+    if (!editorRef.current) return;
+    const code = editorRef.current.getValue();
+    const runReq = {
+      code: code,
+      language: selectedLang
+    }
+    const result = await axiosMain.post(`submission/submit/${id}`, runReq);
+    console.log(result);
+    setSubmissionResult(result.data);
+  };
 
   useEffect(() => {
     if (startCode.length > 0) {
@@ -356,6 +368,7 @@ const ProblemDetailPage = () => {
 
           </div>
 
+          {/* Test cases */}
           <div className="flex-grow p-4 font-mono text-sm overflow-y-auto bg-[#0a0f1d]">
 
             {activeTab === 'testcase' ? (
@@ -398,7 +411,7 @@ const ProblemDetailPage = () => {
 
                         <p className="mb-2 text-xs uppercase">Output</p>
 
-                        <pre className={`${resultTest[activeTest].stdout==resultTest[activeTest].expected_output?"border-green-500":"border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
+                        <pre className={`${resultTest[activeTest].stdout == resultTest[activeTest].expected_output ? "border-green-500" : "border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
                           {resultTest.length > 0 ? resultTest[activeTest].stdout
                             : ""}
                         </pre>
@@ -408,7 +421,7 @@ const ProblemDetailPage = () => {
 
                         <p className="mb-2 text-xs uppercase">Expected Output</p>
 
-                        <pre className={`${resultTest[activeTest].stdout==resultTest[activeTest].expected_output?"border-green-500":"border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
+                        <pre className={`${resultTest[activeTest].stdout == resultTest[activeTest].expected_output ? "border-green-500" : "border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
                           {resultTest.length > 0 ? resultTest[activeTest].expected_output : ""}
                         </pre>
 
@@ -420,13 +433,17 @@ const ProblemDetailPage = () => {
 
               </div>
 
-            ) : (
+            ) : activeTab === "result" ? (
 
-              <div className="flex items-center justify-center h-full text-slate-600 italic">
-                You must run your code first
-              </div>
+              submissionResult ? (
+                <SubmissionResult result={submissionResult} />
+              ) : (
+                <div className="flex items-center justify-center h-full text-slate-600 italic">
+                  Submit your code to see result
+                </div>
+              )
 
-            )}
+            ) : null}
 
           </div>
 
@@ -442,6 +459,7 @@ const ProblemDetailPage = () => {
             </motion.button>
 
             <motion.button
+              onClick={submitCode}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="flex items-center gap-2 px-8 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-lg"
