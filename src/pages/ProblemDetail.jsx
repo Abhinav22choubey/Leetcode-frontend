@@ -26,7 +26,6 @@ const ProblemDetailPage = () => {
       try {
         const res = await axiosMain.get(`problem/problemById/${id}`);
         setProblemData(res.data);
-        console.log(res.data);
       } catch (err) {
         console.log(err);
       }
@@ -50,6 +49,9 @@ const ProblemDetailPage = () => {
   const [activeTab, setActiveTab] = useState('testcase');
   const [showRefSolution, setShowRefSolution] = useState(false);
 
+  // ✅ NEW
+  const [refLang, setRefLang] = useState("");
+
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
 
@@ -64,7 +66,6 @@ const ProblemDetailPage = () => {
     console.log("Running Code:\n", code);
   };
 
-  // set language + code after API loads
   useEffect(() => {
     if (startCode.length > 0) {
       setSelectedLang(startCode[0].language);
@@ -75,9 +76,16 @@ const ProblemDetailPage = () => {
   useEffect(() => {
     const langData = startCode.find(c => c.language === selectedLang);
     if (langData && editorRef.current) {
-      editorRef.current.setValue(langData.initialCode||" ");
+      editorRef.current.setValue(langData.initialCode || " ");
     }
   }, [selectedLang, startCode]);
+
+  // ✅ NEW
+  useEffect(() => {
+    if (referenceSolution.length > 0) {
+      setRefLang(referenceSolution[0].language);
+    }
+  }, [referenceSolution]);
 
   const difficultyStyles = {
     Easy: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
@@ -86,8 +94,9 @@ const ProblemDetailPage = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] bg-[#0f172a] text-slate-200 overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] bg-[#0f172a] text-slate-200">
 
+      {/* LEFT PANEL */}
       <div className="w-full lg:w-[45%] h-full lg:h-screen overflow-y-auto border-r border-slate-800 custom-scrollbar">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -127,6 +136,7 @@ const ProblemDetailPage = () => {
             </div>
           </motion.section>
 
+          {/* TEST CASES */}
           <section className="space-y-4">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <HiTerminal className="text-blue-400" /> Visible Test Cases
@@ -183,6 +193,7 @@ const ProblemDetailPage = () => {
             </div>
           </section>
 
+          {/* REFERENCE SOLUTION */}
           <section className="pb-10">
 
             <button
@@ -192,16 +203,12 @@ const ProblemDetailPage = () => {
               <HiCode className="text-xl" />
               <span className="font-semibold">View Reference Solution</span>
 
-              <motion.div
-                animate={{ rotate: showRefSolution ? 180 : 0 }}
-                className="ml-auto"
-              >
+              <motion.div animate={{ rotate: showRefSolution ? 180 : 0 }} className="ml-auto">
                 <HiChevronDown />
               </motion.div>
             </button>
 
             <AnimatePresence>
-
               {showRefSolution && referenceSolution.length > 0 && (
 
                 <motion.div
@@ -211,11 +218,29 @@ const ProblemDetailPage = () => {
                   className="overflow-hidden mt-4 rounded-xl border border-slate-800"
                 >
 
+                  {/* ✅ LANGUAGE DROPDOWN */}
+                  <div className="flex items-center gap-4 px-4 py-2 border-b border-slate-800 bg-[#0f172a]">
+                    <div className="relative">
+                      <select
+                        value={refLang}
+                        onChange={(e) => setRefLang(e.target.value)}
+                        className="appearance-none bg-slate-800 border border-slate-700 text-sm rounded-md px-4 py-1.5 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                      >
+                        {referenceSolution.map((lang, idx) => (
+                          <option key={idx} value={lang.language}>
+                            {lang.language.charAt(0).toUpperCase() + lang.language.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                      <HiChevronDown className="absolute right-2 top-2.5 text-slate-400" />
+                    </div>
+                  </div>
+
                   <Editor
                     height="300px"
                     theme="vs-dark"
-                    language={referenceSolution?.[0]?.language || "cpp"}
-                    value={referenceSolution?.[0]?.completeCode || ""}
+                    language={refLang || "cpp"}
+                    value={referenceSolution.find(c => c.language === refLang)?.completeCode || ""}
                     options={{
                       readOnly: true,
                       minimap: { enabled: false },
@@ -225,9 +250,7 @@ const ProblemDetailPage = () => {
                   />
 
                 </motion.div>
-
               )}
-
             </AnimatePresence>
 
           </section>
@@ -235,6 +258,7 @@ const ProblemDetailPage = () => {
         </motion.div>
       </div>
 
+      {/* RIGHT PANEL */}
       <div className="w-full lg:w-[55%] flex flex-col h-screen bg-[#0e1525]">
 
         <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-[#0f172a]">
@@ -358,7 +382,7 @@ const ProblemDetailPage = () => {
 
           </div>
 
-          <div className="p-4 border-t border-slate-800 bg-[#0f172a] flex justify-end gap-3">
+          <div className="sticky bottom-0 p-4 border-t border-slate-800 bg-[#0f172a] flex justify-end gap-3 z-10">
 
             <motion.button
               onClick={runCode}
