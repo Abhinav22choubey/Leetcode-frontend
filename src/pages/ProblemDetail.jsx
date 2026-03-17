@@ -11,7 +11,9 @@ import {
   HiClipboardCopy,
   HiTerminal,
   HiChevronRight,
-  HiCode
+  HiCode,
+  HiCheckCircle,
+  HiXCircle,
 } from 'react-icons/hi';
 
 
@@ -26,6 +28,7 @@ const ProblemDetailPage = () => {
       try {
         const res = await axiosMain.get(`problem/problemById/${id}`);
         setProblemData(res.data);
+        // console.log(res.data);
       } catch (err) {
         console.log(err);
       }
@@ -46,10 +49,14 @@ const ProblemDetailPage = () => {
   const [selectedLang, setSelectedLang] = useState("");
   const [editorCode, setEditorCode] = useState("");
 
+  const [resultTest, setResultTest] = useState([]);
+
+
   const [activeTab, setActiveTab] = useState('testcase');
   const [showRefSolution, setShowRefSolution] = useState(false);
 
-  // ✅ NEW
+  const [activeTest, setActiveTest] = useState(0);
+
   const [refLang, setRefLang] = useState("");
 
   const editorRef = useRef(null);
@@ -60,11 +67,20 @@ const ProblemDetailPage = () => {
     monacoRef.current = monaco;
   };
 
-  const runCode = () => {
+  const runCode = async () => {
     if (!editorRef.current) return;
     const code = editorRef.current.getValue();
-    console.log("Running Code:\n", code);
+    const runReq = {
+      code: code,
+      language: selectedLang
+    }
+    const result = await axiosMain.post(`submission/run/${id}`, runReq);
+    console.log(result.data);
+    setResultTest(result.data);
   };
+  const handleTest = (i) => {
+    setActiveTest(i);
+  }
 
   useEffect(() => {
     if (startCode.length > 0) {
@@ -80,7 +96,6 @@ const ProblemDetailPage = () => {
     }
   }, [selectedLang, startCode]);
 
-  // ✅ NEW
   useEffect(() => {
     if (referenceSolution.length > 0) {
       setRefLang(referenceSolution[0].language);
@@ -218,7 +233,7 @@ const ProblemDetailPage = () => {
                   className="overflow-hidden mt-4 rounded-xl border border-slate-800"
                 >
 
-                  {/* ✅ LANGUAGE DROPDOWN */}
+                  {/* LANGUAGE DROPDOWN */}
                   <div className="flex items-center gap-4 px-4 py-2 border-b border-slate-800 bg-[#0f172a]">
                     <div className="relative">
                       <select
@@ -351,10 +366,17 @@ const ProblemDetailPage = () => {
 
                   {visibleTestCases.map((_, i) => (
                     <button
+                      onClick={() => { handleTest(i) }}
                       key={i}
                       className="px-3 py-1 bg-slate-800 rounded-md hover:bg-slate-700 transition-colors"
                     >
                       Case {i + 1}
+                      {resultTest.length > 0 && resultTest[i].status_id == 3 && (
+                        <HiCheckCircle />
+                      )}
+                      {resultTest.length > 0 && resultTest[i].status_id != 3 && (
+                        <HiXCircle />
+                      )}
                     </button>
                   ))}
 
@@ -365,10 +387,36 @@ const ProblemDetailPage = () => {
                   <p className="mb-2 text-xs uppercase">Input</p>
 
                   <pre className="bg-slate-900/50 p-3 rounded-lg border border-slate-800">
-                    {visibleTestCases.length > 0 ? visibleTestCases[0].input : ""}
+                    {visibleTestCases.length > 0 ? visibleTestCases[activeTest].input : ""}
                   </pre>
 
                 </div>
+                {
+                  resultTest.length > 0 && (
+                    <>
+                      <div className="text-slate-400">
+
+                        <p className="mb-2 text-xs uppercase">Output</p>
+
+                        <pre className={`${resultTest[activeTest].stdout==resultTest[activeTest].expected_output?"border-green-500":"border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
+                          {resultTest.length > 0 ? resultTest[activeTest].stdout
+                            : ""}
+                        </pre>
+
+                      </div>
+                      <div className="text-slate-400">
+
+                        <p className="mb-2 text-xs uppercase">Expected Output</p>
+
+                        <pre className={`${resultTest[activeTest].stdout==resultTest[activeTest].expected_output?"border-green-500":"border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
+                          {resultTest.length > 0 ? resultTest[activeTest].expected_output : ""}
+                        </pre>
+
+                      </div>
+                    </>
+                  )
+                }
+
 
               </div>
 
