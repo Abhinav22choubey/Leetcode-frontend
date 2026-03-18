@@ -13,6 +13,7 @@ import axiosMain from '../utils/axios';
 import DashboardSkeleton from '../components/DashboardShimmer';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllProblem } from '../Slice';
+import { useNavigate } from 'react-router';
 // --- UTILS ---
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -65,6 +66,7 @@ const Dashboard = () => {
     // const [problemLength,setProblemLength]=useState(0);
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
+    const navigate=useNavigate();
     const [page, setPage] = useState(1);
     const limit = 10;
     const [searchTerm, setSearchTerm] = useState("");
@@ -76,14 +78,23 @@ const Dashboard = () => {
     useEffect(() => {
         dispatch(getAllProblem());
     }, [])
-
+    const handleClick=(idx)=>{
+        navigate(`/problems/${submissions[idx].problemId._id}`)
+    }
     // Process data for charts
-    const chartData = useMemo(() => submissions.map(s => ({
-        name: formatDate(s.createdAt),
-        runtime: s.runtime,
-        memory: s.memory
-    })), [submissions]);
+    const chartData = useMemo(() => {
+        if (!submissions || submissions.length === 0) {
+            return [
+                { name: "No Data", runtime: 0, memory: 0 }
+            ];
+        }
 
+        return submissions.map(s => ({
+            name: formatDate(s.createdAt),
+            runtime: s.runtime || 0,
+            memory: s.memory || 0
+        }));
+    }, [submissions]);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -211,139 +222,146 @@ const Dashboard = () => {
                                             dataKey="value"
                                             stroke="none"
                                         >
-                                        {pieData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }}
-                                    />
-                                    <Legend verticalAlign="bottom" height={36} />
-                                </PieChart>
-                            </ResponsiveContainer>
+                                            {pieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }}
+                                        />
+                                        <Legend verticalAlign="bottom" height={36} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </Card>
                     </div>
-                </Card>
-            </div>
 
                     {/* TABLE SECTION */}
-            <Card className="p-0">
-                <div className="p-6 border-b border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h3 className="text-lg font-semibold">Recent Submissions</h3>
-                        <p className="text-sm text-slate-500">Showing {submissions.length} of {pagination.total} records</p>
-                    </div>
+                    <Card className="p-0">
+                        <div className="p-6 border-b border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <h3 className="text-lg font-semibold">Recent Submissions</h3>
+                                <p className="text-sm text-slate-500">Showing {submissions.length} of {pagination.total} records</p>
+                            </div>
 
-                    <div className="relative w-full md:w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search problem..."
-                            className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
+                            <div className="relative w-full md:w-72">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search problem..."
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="text-slate-500 text-xs uppercase tracking-wider bg-slate-800/30">
-                                <th className="px-6 py-4 font-semibold">Problem Title</th>
-                                <th className="px-6 py-4 font-semibold">Status</th>
-                                <th className="px-6 py-4 font-semibold">Runtime</th>
-                                <th className="px-6 py-4 font-semibold">Memory</th>
-                                <th className="px-6 py-4 font-semibold">Date</th>
-                                <th className="px-6 py-4 font-semibold text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-800">
-                            <AnimatePresence>
-                                {submissions
-                                    .filter(s => s.problemId?.title?.toLowerCase().includes(searchTerm.toLowerCase()))
-                                    .map((sub, idx) => (
-                                        <motion.tr
-                                            key={sub._id}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: idx * 0.05 }}
-                                            className="hover:bg-slate-800/30 transition-colors group"
-                                        >
-                                            <td className="px-6 py-4">
-                                                <span className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">
-                                                    {sub.problemId?.title}
-                                                </span>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="text-slate-500 text-xs uppercase tracking-wider bg-slate-800/30">
+                                        <th className="px-6 py-4 font-semibold">Problem Title</th>
+                                        <th className="px-6 py-4 font-semibold">Status</th>
+                                        <th className="px-6 py-4 font-semibold">Runtime</th>
+                                        <th className="px-6 py-4 font-semibold">Memory</th>
+                                        <th className="px-6 py-4 font-semibold">Date</th>
+                                        <th className="px-6 py-4 font-semibold text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800">
+                                    {
+                                        submissions.length == 0 ? (<tr>
+                                            <td colSpan="6" className="py-10 text-center text-slate-500">
+                                                No submissions yet
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <Badge variant={sub.status === "Accepted" ? "accepted" : "wrong"}>
-                                                    {sub.status}
-                                                </Badge>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-1.5 text-slate-400 text-sm">
-                                                    <Clock size={14} /> {sub.runtime} ms
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-1.5 text-slate-400 text-sm">
-                                                    <Database size={14} /> {sub.memory} KB
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-slate-500">
-                                                {formatDate(sub.createdAt)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button className="text-slate-500 hover:text-white transition-colors">
-                                                    <ExternalLink size={18} />
-                                                </button>
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                            </AnimatePresence>
-                        </tbody>
-                    </table>
-                </div>
+                                        </tr>) : <AnimatePresence>
 
-                {/* PAGINATION */}
-                <div className="p-6 border-t border-slate-800 flex items-center justify-between">
-                    <p className="text-sm text-slate-500">
-                        Page <span className="text-slate-200 font-medium">{pagination.page}</span> of {pagination.totalPages}
-                    </p>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-                            disabled={page === 1}
-                            className="p-2 rounded-lg border border-slate-700 hover:bg-slate-800 disabled:opacity-50"
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        {Array.from({ length: pagination.totalPages || 1 }, (_, i) => i + 1).map(num => (
-                            <button
-                                key={num}
-                                onClick={() => setPage(num)}
-                                className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${pagination.page === num
-                                    ? 'bg-blue-600 text-white'
-                                    : 'border border-slate-700 hover:bg-slate-800'
-                                    }`}
-                            >
-                                {num}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() => setPage(prev => Math.max(prev + 1, pagination.totalPages))}
-                            disabled={page === 1}
-                            className="p-2 rounded-lg border border-slate-700 hover:bg-slate-800 disabled:opacity-50"
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                </div>
-            </Card>
+                                            {submissions
+                                                .filter(s => s.problemId?.title?.toLowerCase().includes(searchTerm.toLowerCase()))
+                                                .map((sub, idx) => (
+                                                    <motion.tr
+                                                        key={sub._id}
+                                                        initial={{ opacity: 0, x: -10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: idx * 0.05 }}
+                                                        className="hover:bg-slate-800/30 transition-colors group"
+                                                    >
+                                                        <td className="px-6 py-4">
+                                                            <span className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">
+                                                                {sub.problemId?.title}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <Badge variant={sub.status === "Accepted" ? "accepted" : "wrong"}>
+                                                                {sub.status}
+                                                            </Badge>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center gap-1.5 text-slate-400 text-sm">
+                                                                <Clock size={14} /> {sub.runtime} ms
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center gap-1.5 text-slate-400 text-sm">
+                                                                <Database size={14} /> {sub.memory} KB
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-sm text-slate-500">
+                                                            {formatDate(sub.createdAt)}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <button onClick={()=>{handleClick(idx)}} className="text-slate-500 hover:text-white transition-colors">
+                                                                <ExternalLink size={18} />
+                                                            </button>
+                                                        </td>
+                                                    </motion.tr>
+                                                ))}
+                                        </AnimatePresence>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
 
-        </main >
+                        {/* PAGINATION */}
+                        <div className="p-6 border-t border-slate-800 flex items-center justify-between">
+                            <p className="text-sm text-slate-500">
+                                Page <span className="text-slate-200 font-medium">{pagination.page}</span> of {pagination.totalPages}
+                            </p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={page === 1}
+                                    className="p-2 rounded-lg border border-slate-700 hover:bg-slate-800 disabled:opacity-50"
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+                                {Array.from({ length: pagination.totalPages || 1 }, (_, i) => i + 1).map(num => (
+                                    <button
+                                        key={num}
+                                        onClick={() => setPage(num)}
+                                        className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${pagination.page === num
+                                            ? 'bg-blue-600 text-white'
+                                            : 'border border-slate-700 hover:bg-slate-800'
+                                            }`}
+                                    >
+                                        {num}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => setPage(prev => Math.max(prev + 1, pagination.totalPages))}
+                                    disabled={page === 1}
+                                    className="p-2 rounded-lg border border-slate-700 hover:bg-slate-800 disabled:opacity-50"
+                                >
+                                    <ChevronRight size={20} />
+                                </button>
+                            </div>
+                        </div>
+                    </Card>
 
-            {/* FOOTER BLUR DECORATION */ }
-            < div className = "fixed bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-blue-600/10 blur-[120px] pointer-events-none" />
+                </main >
+
+                {/* FOOTER BLUR DECORATION */}
+                < div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-blue-600/10 blur-[120px] pointer-events-none" />
             </div >)}
         </>
 
