@@ -15,6 +15,7 @@ import {
   HiCheckCircle,
   HiXCircle,
 } from 'react-icons/hi';
+import SubmissionHistory from '../components/SubmissionHistory';
 import SubmissionResult from '../components/Result';
 
 const ProblemDetailPage = () => {
@@ -23,7 +24,7 @@ const ProblemDetailPage = () => {
 
   const [problemData, setProblemData] = useState({});
   const [submissionResult, setSubmissionResult] = useState(null);
-
+  const [allSubmissions, setAllSubmission] = useState([]);
   useEffect(() => {
     const fetchProblem = async () => {
       try {
@@ -36,6 +37,19 @@ const ProblemDetailPage = () => {
     }
     fetchProblem();
   }, [id]);
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      try {
+        const res=await axiosMain.get(`problem/submittedProblem/${id}`);
+        console.log(res.data);
+        setAllSubmission(res.data);
+      } catch (error) {
+        console.log("Error: " + error.message);
+      }
+    }
+    fetchSubmissions();
+  },[id,submissionResult])
 
   const {
     title,
@@ -52,7 +66,7 @@ const ProblemDetailPage = () => {
 
   const [resultTest, setResultTest] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [runLoading,setRunLoading]=useState(false);
+  const [runLoading, setRunLoading] = useState(false);
 
   const [activeNav, setActiveNav] = useState('description');
 
@@ -90,6 +104,7 @@ const ProblemDetailPage = () => {
   const submitCode = async () => {
     if (!editorRef.current) return;
     setLoading(true);
+    runCode();
     const code = editorRef.current.getValue();
     const runReq = {
       code: code,
@@ -128,7 +143,6 @@ const ProblemDetailPage = () => {
     Medium: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
     Hard: 'text-rose-400 bg-rose-400/10 border-rose-400/20'
   };
-
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] bg-[#0f172a] text-slate-200">
 
@@ -439,11 +453,19 @@ const ProblemDetailPage = () => {
               )
             }
 
+            {/* Submissions  */}
+            {
+              activeNav=="submissions" && (
+                <>
+                 <SubmissionHistory submissions={allSubmissions} />
+                </>
+              )
+            }
           </AnimatePresence>
         }
       </div>
       {/* RIGHT PANEL */}
-      <div className="w-full lg:w-[55%] flex flex-col h-screen bg-[#0e1525]">
+      <div className="w-full lg:w-[55%] flex flex-col h-screen bg-[#0e1525]  custom-scrollbar">
         <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-[#0f172a]">
           <div className="flex items-center gap-4">
             <div className="relative group">
@@ -595,7 +617,7 @@ const ProblemDetailPage = () => {
 
           </div>
           {
-            loading==true||runLoading==true ? (
+            loading == true || runLoading == true ? (
               <div className="sticky bottom-0 p-4 border-t border-slate-800 bg-[#0f172a] flex justify-end gap-3 z-10">
 
                 <div
