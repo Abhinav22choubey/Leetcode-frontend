@@ -56,8 +56,10 @@ const Problems = () => {
     }
     useEffect(() => {
          if(problems.length==0)dispatch(getAllProblem());
+    }, [problems,dispatch])
+    useEffect(()=>{
         getsolvedProblem();
-    }, [problems.length])
+    },[])
     const filteredProblems = useMemo(() => {
         return problems
             .map(problem => ({

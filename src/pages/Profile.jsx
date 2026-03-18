@@ -76,8 +76,9 @@ const Dashboard = () => {
 
     const { problems } = useSelector((state) => state.problem);
     useEffect(() => {
+        if(problems.length==0)
         dispatch(getAllProblem());
-    }, [])
+    }, [problems,dispatch])
     const handleClick=(idx)=>{
         navigate(`/problems/${submissions[idx].problemId._id}`)
     }
