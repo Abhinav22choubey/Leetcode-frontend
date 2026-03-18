@@ -87,7 +87,7 @@ const FiltersBar = ({ status, setStatus, difficulty, setDifficulty, tag, setTag 
       </div>
 
       {role==="admin"&&(<div className="ml-auto hidden lg:block">
-        <button onClick={()=>{navigate('/createProblem')}} className='px-4 py-1.5 rounded-lg text-sm font-medium  bg-blue-600 text-white shadow-lg shadow-blue-900/20'>Create Problem</button>
+        <button onClick={()=>{navigate('/admin/createProblem')}} className='px-4 py-1.5 rounded-lg text-sm font-medium  bg-blue-600 text-white shadow-lg shadow-blue-900/20'>Create Problem</button>
       </div>)}
       {/* Results Count */}
       <div className="ml-auto hidden lg:block">

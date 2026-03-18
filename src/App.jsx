@@ -11,6 +11,7 @@ import Problems from "./pages/Problems";
 import CreateProblem from "./pages/CreateProblem"
 import ProblemDetail from "./pages/ProblemDetail"
 import Profile from "./pages/Profile"
+import AdminDashboard from "./pages/AdminPanel";
 function ProtectedRoute({ children }) {
   const { loading, isAuthenticated } = useSelector((state) => state.auth);
   if (!isAuthenticated) {
@@ -57,7 +58,15 @@ function AnimatedRoutes() {
           }
         />
         <Route
-          path="/createProblem"
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/createProblem"
           element={
             <ProtectedRoute>
               <CreateProblem/>

@@ -74,6 +74,10 @@ const Dashboard = () => {
     const { user = {}, submissions = [], pagination = {} } = API_DATA;
     const isAdmin = user?.role === "admin";
 
+    const handleAdmin=()=>{
+        navigate("/admin");
+    }
+
     const { problems } = useSelector((state) => state.problem);
     useEffect(() => {
         if(problems.length==0)
@@ -162,6 +166,9 @@ const Dashboard = () => {
                         </div>
                         {isAdmin && (
                             <motion.button
+                                onClick={()=>{
+                                    handleAdmin();
+                                }}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold text-sm shadow-lg shadow-amber-500/20"
