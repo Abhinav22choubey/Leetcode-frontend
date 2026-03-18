@@ -3,13 +3,14 @@ import { AnimatePresence } from "framer-motion";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import { authSlice, checkAuth } from "./authSlice"
+import { authSlice, checkAuth } from "./Slice"
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import Navbar from "./common/navbar";
 import Problems from "./pages/Problems";
 import CreateProblem from "./pages/CreateProblem"
 import ProblemDetail from "./pages/ProblemDetail"
+import Profile from "./pages/Profile"
 function ProtectedRoute({ children }) {
   const { loading, isAuthenticated } = useSelector((state) => state.auth);
   if (!isAuthenticated) {
@@ -44,6 +45,14 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <Problems />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

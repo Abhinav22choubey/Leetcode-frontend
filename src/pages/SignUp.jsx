@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
-import { registerUser,authSlice} from "../authSlice";
+import { registerUser,authSlice} from "../Slice";
 import {useSelector,useDispatch} from "react-redux";
 
 

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { loginUser } from "../authSlice";
+import { loginUser } from "../Slice";
 
 const schema = z.object({
   emailId: z.string().email("Enter a valid email"),

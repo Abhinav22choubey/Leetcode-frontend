@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FiltersBar from '../components/FiltersBar';
 import ProblemsTable from '../components/ProblemTable';
 import axiosMain from "../utils/axios"
-import { useSelector } from "react-redux"
-
+import { useSelector,useDispatch } from "react-redux"
+import { problemSlice,getAllProblem } from '../Slice';
 // Dummy Data
 // const INITIAL_PROBLEMS = [
 //   { id: 1, title: "Two Sum", difficulty: "Easy", tags: ["Array", "Hash Table"], isSolved: true },
@@ -29,20 +29,22 @@ import { useSelector } from "react-redux"
 //   { id: 20, title: "Edit Distance", difficulty: "Hard", tags: ["String", "DP"], isSolved: false },
 // ];
 const Problems = () => {
-    const [INITIAL_PROBLEMS, setINITIAL_PROBLEMS] = useState([]);
+
     const [filterStatus, setFilterStatus] = useState("All"); // All, Solved
     const [filterDifficulty, setFilterDifficulty] = useState("All");
     const [selectedTag, setSelectedTag] = useState("All");
     const [solveProblem, setSolveProblem] = useState([]);
-    const getAllProblem = async () => {
-        try {
-            const response = await axiosMain.get("problem/getAllproblem");
-            setINITIAL_PROBLEMS(response.data);
-            // console.log(response.data);
-        } catch (err) {
-            console.log(err.message);
-        }
-    }
+    // const getAllProblem = async () => {
+    //     try {
+    //         const response = await axiosMain.get("problem/getAllproblem");
+    //         setINITIAL_PROBLEMS(response.data);
+    //         console.log(response.data);
+    //     } catch (err) {
+    //         console.log(err.message);
+    //     }
+    // }
+    const {problems=[]}=useSelector((state)=>state.problem);
+    const dispatch=useDispatch();
     const getsolvedProblem = async () => {
         try {
             const response = await axiosMain.get("problem/problemSolvedByUser");
@@ -53,11 +55,11 @@ const Problems = () => {
         }
     }
     useEffect(() => {
-        getAllProblem();
+         if(problems.length==0)dispatch(getAllProblem());
         getsolvedProblem();
-    }, [])
+    }, [problems.length])
     const filteredProblems = useMemo(() => {
-        return INITIAL_PROBLEMS
+        return problems
             .map(problem => ({
                 ...problem,
                 isSolved: solveProblem.includes(problem._id)
@@ -77,7 +79,7 @@ const Problems = () => {
 
                 return statusMatch && difficultyMatch && tagMatch;
             });
-    }, [INITIAL_PROBLEMS, solveProblem, filterStatus, filterDifficulty, selectedTag]);
+    }, [problems, solveProblem, filterStatus, filterDifficulty, selectedTag]);
     return (
         <div className="min-h-screen bg-[#0f172a] text-slate-200 p-4 md:p-8 pt-24">
             <div className="max-w-6xl mx-auto space-y-8">

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { User } from 'lucide-react';
-import { loginUser, logoutUser } from "../authSlice";
+import { loginUser, logoutUser } from "../Slice";
 import { useNavigate } from "react-router";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +68,7 @@ const Navbar = () => {
                   <div className="px-4 py-2 text-xs text-gray-400 uppercase font-bold tracking-wider">
                     User Settings
                   </div>
-                  <button className="w-full text-left px-4 py-2.5 hover:bg-gray-700 transition-colors duration-150 flex items-center gap-2">
+                  <button onClick={()=>{navigate("/profile")}} className="w-full text-left px-4 py-2.5 hover:bg-gray-700 transition-colors duration-150 flex items-center gap-2">
                     <span className="text-sm">Profile</span>
                   </button>
                   <button onClick={()=>{navigate('/problems')}} className="w-full text-left px-4 py-2.5 hover:bg-gray-700 transition-colors duration-150 flex items-center gap-2">

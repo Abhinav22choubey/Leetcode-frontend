@@ -18,6 +18,21 @@ export const registerUser = createAsyncThunk(
     }
   },
 );
+export const getAllProblem = createAsyncThunk(
+  "problems/getAllProblem",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosMain.get("problem/getAllproblem");
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.response?.data || error.message,
+      );
+    }
+  },
+);
+
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
@@ -128,11 +143,37 @@ export const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
-      .addCase(logoutUser.rejected, (state,action) => {
+      .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Something went wrong";
         state.user = null;
         state.isAuthenticated = false;
+      });
+  },
+});
+
+export const problemSlice = createSlice({
+  name: "problem",
+  initialState: {
+    problems: [],
+    loading:true,
+    error:null
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getAllProblem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllProblem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.problems = action.payload;
+      })
+      .addCase(getAllProblem.rejected, (state, action) => {
+        state.loading = false;
+        state.problems = null;
+        state.error = action.payload?.message || "Something went wrong";
       });
   },
 });
