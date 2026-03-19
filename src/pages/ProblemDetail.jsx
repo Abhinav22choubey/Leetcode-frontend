@@ -17,6 +17,7 @@ import {
 } from 'react-icons/hi';
 import SubmissionHistory from '../components/SubmissionHistory';
 import SubmissionResult from '../components/Result';
+import AiChat from "../components/AiChat";
 
 const ProblemDetailPage = () => {
 
@@ -150,7 +151,7 @@ const ProblemDetailPage = () => {
       <div className="w-full lg:w-[45%] h-full lg:h-screen overflow-y-auto border-r border-slate-800 custom-scrollbar">
         <div className="relative flex items-center gap-6 px-6 py-2 border-b border-slate-800 text-sm">
 
-          {["description", "result", "solution", "submissions"].map((tab) => (
+          {["description", "result", "solution", "submissions","aiChat"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveNav(tab)}
@@ -458,6 +459,14 @@ const ProblemDetailPage = () => {
               activeNav=="submissions" && (
                 <>
                  <SubmissionHistory submissions={allSubmissions} />
+                </>
+              )
+            }
+            {/* ChatBot */}
+            {
+              activeNav=="aiChat"&&(
+                <>
+                <AiChat/>
                 </>
               )
             }

@@ -42,6 +42,7 @@ const ActionCard = ({ title, description, icon: Icon, colorClass, shadowColor,in
     const handleAction=(index)=>{
         if(index==0) navigate("registerAdmin")
         if(index==1) navigate("createProblem");
+        if(index==3) navigate("deleteProblem")
     }
   return (
     <motion.div

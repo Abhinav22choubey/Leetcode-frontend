@@ -73,3 +73,8 @@ html {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   box-shadow: 0 0 6px rgba(59, 130, 246, 0.3);
 }
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
