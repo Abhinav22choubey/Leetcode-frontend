@@ -6,8 +6,9 @@ import { Send, Bot, User, Sun, Moon } from "lucide-react";
 import Typewriter from "typewriter-effect";
 
 const uniqueId = uuidv4();
-
-const Chatapp = () => {
+const Chatapp = ({problemData,code}) => {
+    console.log(problemData);
+    console.log("\n"+code);
     const [messages, setMessages] = useState([
         { sender: "AI", text: "Hii" }
     ]);
@@ -15,7 +16,6 @@ const Chatapp = () => {
     const [load, setLoad] = useState(false);
     const [darkMode, setDarkMode] = useState(true);
     const scrollRef = useRef(null);
-
     async function run() {
         if (!input.trim() || load) return;
 
@@ -33,7 +33,9 @@ const Chatapp = () => {
 
             const res = await axiosMain.post("chat/Ai", {
                 _id: uniqueId,
-                msg: userMessage  
+                msg: userMessage ,
+                problemData:problemData,
+                code:code,
             });
 
             const data = res.data;

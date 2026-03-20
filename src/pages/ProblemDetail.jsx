@@ -466,7 +466,7 @@ const ProblemDetailPage = () => {
             {
               activeNav=="aiChat"&&(
                 <>
-                <AiChat/>
+                <AiChat problemData={problemData} code={editorRef.current.getValue()}/>
                 </>
               )
             }
