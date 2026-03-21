@@ -9,7 +9,8 @@ import {
   LayoutDashboard,
   Settings,
   Bell,
-  Search
+  Search,
+  Video
 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
@@ -42,7 +43,8 @@ const ActionCard = ({ title, description, icon: Icon, colorClass, shadowColor,in
     const handleAction=(index)=>{
         if(index==0) navigate("registerAdmin")
         if(index==1) navigate("createProblem");
-        if(index==3) navigate("deleteProblem")
+        if(index==3) navigate("deleteProblem");
+        if(index==4) navigate("uploadVideo");
     }
   return (
     <motion.div
@@ -116,6 +118,13 @@ const AdminDashboard = () => {
       icon: Trash2,
       colorClass: "from-rose-500 to-red-600",
       shadowColor: "shadow-rose-500/20",
+    },
+    {
+      title: "Upload Editorial Video",
+      description: "Upload solution video for problems",
+      icon: Video,
+      colorClass: "from-emerald-500 to-teal-600",
+      shadowColor: "shadow-emerald-500/20",
     },
   ];
 

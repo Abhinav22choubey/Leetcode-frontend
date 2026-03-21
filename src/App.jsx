@@ -14,6 +14,7 @@ import Profile from "./pages/Profile"
 import AdminDashboard from "./pages/AdminPanel";
 import DeleteProblem from "./pages/DeleteProblem"
 import AdminRegister from "./pages/AdminRegister";
+import VideoCreator from "./components/VideoCreator"
 function ProtectedRoute({ children }) {
   const { loading, isAuthenticated } = useSelector((state) => state.auth);
   if (!isAuthenticated) {
@@ -91,6 +92,15 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/uploadVideo"
+          element={
+            <ProtectedRoute>
+              <VideoCreator/>
+            </ProtectedRoute>
+          }
+        />
+        
         <Route
           path="/problems/:id"
           element={

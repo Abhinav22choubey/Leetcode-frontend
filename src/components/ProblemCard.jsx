@@ -1,8 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, Tag, Layers } from 'lucide-react';
+import { Tag } from 'lucide-react';
 
-const ProblemCard = ({ problem, index, onDelete }) => {
+const ProblemCard = ({ 
+  problem, 
+  index, 
+  onAction, 
+  actionLabel = "Action",
+  actionIcon: ActionIcon,
+  actionColor = "from-rose-600 to-rose-500"
+}) => {
+
   const difficultyColors = {
     Easy: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
     Medium: "text-amber-400 bg-amber-400/10 border-amber-400/20",
@@ -19,11 +27,12 @@ const ProblemCard = ({ problem, index, onDelete }) => {
       whileHover={{ y: -5 }}
       className="group relative bg-slate-900 border border-slate-800 rounded-2xl p-6 overflow-hidden transition-colors hover:border-slate-700"
     >
-      {/* Decorative Gradient Glow */}
-      <div className="absolute -right-10 -top-10 w-32 h-32 bg-rose-500/5 blur-3xl rounded-full group-hover:bg-rose-500/10 transition-colors" />
-      
+      {/* Glow */}
+      <div className="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full group-hover:bg-indigo-500/10 transition-colors" />
+
       <div className="relative flex flex-col h-full">
-        {/* Top Section: Difficulty & ID */}
+
+        {/* Top */}
         <div className="flex justify-between items-start mb-4">
           <span className={`px-3 py-1 rounded-full text-xs font-bold border ${difficultyColors[problem.difficultyLevel]}`}>
             {problem.difficultyLevel}
@@ -53,13 +62,16 @@ const ProblemCard = ({ problem, index, onDelete }) => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={onDelete}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-lg shadow-rose-900/20 hover:shadow-rose-500/30 transition-all group/btn"
+            onClick={onAction}
+            className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r ${actionColor} text-white font-semibold shadow-lg transition-all group/btn`}
           >
-            <Trash2 className="w-4 h-4 group-hover/btn:rotate-12 transition-transform" />
-            Delete Problem
+            {ActionIcon && (
+              <ActionIcon className="w-4 h-4 group-hover/btn:rotate-12 transition-transform" />
+            )}
+            {actionLabel}
           </motion.button>
         </div>
+
       </div>
     </motion.div>
   );

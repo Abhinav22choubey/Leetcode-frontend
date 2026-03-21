@@ -54,7 +54,7 @@ const DeleteProblemPage = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
         >
-            {loading == true ? (<DeletePageSkeleton/>) : (<div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-rose-500/30 font-sans">
+            {loading == true ? (<DeletePageSkeleton />) : (<div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-rose-500/30 font-sans">
                 {/* Background Decorative Gradients */}
                 <div className="fixed inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full" />
@@ -119,10 +119,12 @@ const DeleteProblemPage = () => {
                             {filteredProblems.length > 0 ? (
                                 filteredProblems.map((problem, index) => (
                                     <ProblemCard
-                                        key={problem._id}
                                         problem={problem}
                                         index={index}
-                                        onDelete={() => handleDeleteTrigger(problem)}
+                                        onAction={() => handleDeleteTrigger(problem)}
+                                        actionLabel="Delete Problem"
+                                        actionIcon={Trash2}
+                                        actionColor="from-rose-600 to-rose-500"
                                     />
                                 ))
                             ) : (
