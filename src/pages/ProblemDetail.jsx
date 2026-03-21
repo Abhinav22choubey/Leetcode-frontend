@@ -18,6 +18,7 @@ import {
 import SubmissionHistory from '../components/SubmissionHistory';
 import SubmissionResult from '../components/Result';
 import AiChat from "../components/AiChat";
+import Editorial from "../components/Editorial"
 
 const ProblemDetailPage = () => {
 
@@ -78,6 +79,8 @@ const ProblemDetailPage = () => {
 
   const [refLang, setRefLang] = useState("");
 
+  const [Video,setVideo]=useState({});
+
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
 
@@ -132,6 +135,20 @@ const ProblemDetailPage = () => {
       editorRef.current.setValue(langData.initialCode || " ");
     }
   }, [selectedLang, startCode]);
+  
+  useEffect(()=>{
+    const fetchVideo = async () => {
+      try {
+        const res=await axiosMain.get(`video/getVideo/${id}`);
+        setVideo(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.log("Error: " + error.message);
+      }
+    }
+    fetchVideo();
+  },[id])
+
 
   useEffect(() => {
     if (referenceSolution.length > 0) {
@@ -151,7 +168,7 @@ const ProblemDetailPage = () => {
       <div className="w-full lg:w-[45%] h-full lg:h-screen overflow-y-auto border-r border-slate-800 custom-scrollbar">
         <div className="relative flex items-center gap-6 px-6 py-2 border-b border-slate-800 text-sm">
 
-          {["description", "result", "solution", "submissions","aiChat"].map((tab) => (
+          {["description", "result", "solution","editorial", "submissions","aiChat"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveNav(tab)}
@@ -451,6 +468,12 @@ const ProblemDetailPage = () => {
                     </AnimatePresence>
                   </section>
                 </motion.div>
+              )
+            }
+            {/* Editorial */}
+            {
+              activeNav==='editorial'&&(
+                <Editorial secureUrl={Video.secureUrl} thumbnailUrl={Video.thumbnailUrl} duration={Video.duration}/>
               )
             }
 

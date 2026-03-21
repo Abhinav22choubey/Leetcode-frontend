@@ -61,7 +61,7 @@ export default function VideoUploader({ problem }) {
 
     // --- Upload Logic ---
     const onSubmit = async (data) => {
-        console.log(problem);
+        // console.log(problem);
         if (!file) return;
 
         try {
@@ -101,7 +101,7 @@ export default function VideoUploader({ problem }) {
             }
 
             const respo = await axiosMain.post(`/video/save`,respon);
-            console.log(respo);
+            // console.log(respo);
 
             setUploadResult(response.data);
             setStatus('success');
