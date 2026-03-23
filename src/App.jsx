@@ -23,6 +23,19 @@ function ProtectedRoute({ children }) {
 
   return children;
 }
+function AdminRoute({ children }) {
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
 
 
 function AnimatedRoutes() {
@@ -31,7 +44,7 @@ function AnimatedRoutes() {
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch])
-  const { loading, isAuthenticated } = useSelector((state) => state.auth)
+  const { loading, isAuthenticated,role } = useSelector((state) => state.auth)
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">
       <span className="loading loading-spinner loading-lg"></span>
@@ -46,7 +59,7 @@ function AnimatedRoutes() {
         <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <SignUp />} />
         <Route
           path="/problems"
-          element={
+          element={ 
             <ProtectedRoute>
               <Problems />
             </ProtectedRoute>
@@ -63,41 +76,41 @@ function AnimatedRoutes() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminDashboard />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         <Route
           path="/admin/registerAdmin"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminRegister />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         <Route
           path="/admin/createProblem"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <CreateProblem/>
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         <Route
           path="/admin/deleteProblem"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <DeleteProblem/>
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         <Route
           path="/admin/uploadVideo"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <VideoCreator/>
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         
