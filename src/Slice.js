@@ -72,15 +72,20 @@ export const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
+        state.isAuthenticated = !!action.payload;
+
         state.user = action.payload;
-        state.role = action.payload.role;
+        state.role =
+          action.payload?.role ||
+          action.payload?.user?.role ||
+          null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -89,15 +94,20 @@ export const authSlice = createSlice({
         state.role = null;
         state.error = action.payload || "Something went wrong";
       })
+
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
+        state.isAuthenticated = !!action.payload;
+
         state.user = action.payload;
-        state.role = action.payload.role;
+        state.role =
+          action.payload?.role ||
+          action.payload?.user?.role ||
+          null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -106,15 +116,20 @@ export const authSlice = createSlice({
         state.role = null;
         state.error = action.payload || "Something went wrong";
       })
+
       .addCase(checkAuth.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
+        state.isAuthenticated = !!action.payload;
+
         state.user = action.payload;
-        state.role = action.payload.role;
+        state.role =
+          action.payload?.role ||
+          action.payload?.user?.role ||
+          null;
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.loading = false;
@@ -123,6 +138,7 @@ export const authSlice = createSlice({
         state.role = null;
         state.error = action.payload || "Something went wrong";
       })
+
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
         state.error = null;

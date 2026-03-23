@@ -46,7 +46,7 @@ export default function HomePage() {
 
                         <div className="flex flex-wrap gap-4">
 
-                            <button className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-blue-500/20">
+                            <button onClick={()=>{navigate('/problems')}}  className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-blue-500/20">
                                 Start Solving
                             </button>
 
@@ -165,7 +165,7 @@ export default function HomePage() {
                             Start Your Coding Journey Today
                         </h2>
 
-                        <button className="px-12 py-5 bg-white text-blue-600 rounded-full font-bold text-xl hover:shadow-2xl hover:shadow-white/20 transition-all flex items-center gap-3 mx-auto">
+                        <button onClick={()=>{navigate('/problems')}}   className="px-12 py-5 bg-white text-blue-600 rounded-full font-bold text-xl hover:shadow-2xl hover:shadow-white/20 transition-all flex items-center gap-3 mx-auto">
                             Get Started Free <FaArrowRight />
                         </button>
 

@@ -47,7 +47,25 @@ const Dropdown = ({ label, options, current, onSelect }) => {
 };
 
 const FiltersBar = ({ status, setStatus, difficulty, setDifficulty, tag, setTag }) => {
-  const tags = ["All", "Array", "String", "DP", "Hash Table", "Binary Search", "Tree", "Graph", "Greedy", "Backtracking"];
+const tags = [
+  "All",
+  "Array",
+  "String",
+  "DP",
+  "Hash Table",
+  "Binary Search",
+  "Tree",
+  "Graph",
+  "Greedy",
+  "Backtracking",
+  "Math",
+  "Basic",
+  "Two Pointer",
+  "Stack",
+  "Prefix",
+  "DFS",
+  "BFS"
+];
   const difficulties = ["All", "Easy", "Medium", "Hard"];
  const role=useSelector((state)=>state.auth.user.role);
  const navigate =useNavigate();
