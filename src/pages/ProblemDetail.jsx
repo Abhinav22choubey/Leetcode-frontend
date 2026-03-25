@@ -43,15 +43,15 @@ const ProblemDetailPage = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await axiosMain.get(`problem/submittedProblem/${id}`);
-        console.log(res.data);
+        const res=await axiosMain.get(`problem/submittedProblem/${id}`);
+        // console.log(res.data);
         setAllSubmission(res.data);
       } catch (error) {
         console.log("Error: " + error.message);
       }
     }
     fetchSubmissions();
-  }, [id, submissionResult])
+  },[id,submissionResult])
 
   const {
     title,
@@ -79,7 +79,7 @@ const ProblemDetailPage = () => {
 
   const [refLang, setRefLang] = useState("");
 
-  const [Video, setVideo] = useState({});
+  const [Video,setVideo]=useState({});
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -93,26 +93,14 @@ const ProblemDetailPage = () => {
     if (!editorRef.current) return;
     setRunLoading(true);
     const code = editorRef.current.getValue();
-    try {
-      const runReq = {
-        code,
-        language: selectedLang
-      };
-      const result = await axiosMain.post(`submission/run/${id}`, runReq);
-      setResultTest(result.data);
-
-    } catch (err) {
-      console.log(err);
-      setResultTest([{
-        status_id: -1,
-        stdout: "",
-        expected_output: "",
-        error: err.response?.data || "Judge0 API Failed"
-      }]);
-
-    } finally {
-      setRunLoading(false);
+    const runReq = {
+      code: code,
+      language: selectedLang
     }
+    const result = await axiosMain.post(`submission/run/${id}`, runReq);
+    setRunLoading(false);
+    // console.log(result.data);
+    setResultTest(result.data);
   };
   const handleTest = (i) => {
     setActiveTest(i);
@@ -120,30 +108,18 @@ const ProblemDetailPage = () => {
   const submitCode = async () => {
     if (!editorRef.current) return;
     setLoading(true);
+    runCode();
     const code = editorRef.current.getValue();
+    const runReq = {
+      code: code,
+      language: selectedLang
+    }
     setActiveNav('result');
     setActiveTab('result');
-    try {
-      await runCode();
-
-      const runReq = {
-        code,
-        language: selectedLang
-      };
-      const result = await axiosMain.post(`submission/submit/${id}`, runReq);
-      setSubmissionResult(result.data);
-    } catch (err) {
-      console.log(err);
-      setSubmissionResult({
-        status: "Error",
-        errorMessage: err.response?.data || "Judge0 API Failed",
-        testCasePassed: 0,
-        testCasesTotal: 0
-      });
-
-    } finally {
-      setLoading(false);
-    }
+    const result = await axiosMain.post(`submission/submit/${id}`, runReq);
+    // console.log(result);
+    setLoading(false);
+    setSubmissionResult(result.data);
   };
 
   useEffect(() => {
@@ -159,19 +135,19 @@ const ProblemDetailPage = () => {
       editorRef.current.setValue(langData.initialCode || " ");
     }
   }, [selectedLang, startCode]);
-
-  useEffect(() => {
+  
+  useEffect(()=>{
     const fetchVideo = async () => {
       try {
-        const res = await axiosMain.get(`video/getVideo/${id}`);
+        const res=await axiosMain.get(`video/getVideo/${id}`);
         setVideo(res.data);
-        console.log(res.data);
+        // console.log(res.data);
       } catch (error) {
         console.log("Error: " + error.message);
       }
     }
     fetchVideo();
-  }, [id])
+  },[id])
 
 
   useEffect(() => {
@@ -192,7 +168,7 @@ const ProblemDetailPage = () => {
       <div className="w-full lg:w-[45%] h-full lg:h-screen overflow-y-auto border-r border-slate-800 custom-scrollbar">
         <div className="relative flex items-center gap-6 px-6 py-2 border-b border-slate-800 text-sm">
 
-          {["description", "result", "solution", "editorial", "submissions", "aiChat"].map((tab) => (
+          {["description", "result", "solution","editorial", "submissions","aiChat"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveNav(tab)}
@@ -496,24 +472,24 @@ const ProblemDetailPage = () => {
             }
             {/* Editorial */}
             {
-              activeNav === 'editorial' && (
-                <Editorial secureUrl={Video.secureUrl} thumbnailUrl={Video.thumbnailUrl} duration={Video.duration} />
+              activeNav==='editorial'&&(
+                <Editorial secureUrl={Video.secureUrl} thumbnailUrl={Video.thumbnailUrl} duration={Video.duration}/>
               )
             }
 
             {/* Submissions  */}
             {
-              activeNav == "submissions" && (
+              activeNav=="submissions" && (
                 <>
-                  <SubmissionHistory submissions={allSubmissions} />
+                 <SubmissionHistory submissions={allSubmissions} />
                 </>
               )
             }
             {/* ChatBot */}
             {
-              activeNav == "aiChat" && (
+              activeNav=="aiChat"&&(
                 <>
-                  <AiChat problemData={problemData} code={editorRef.current.getValue()} />
+                <AiChat problemData={problemData} code={editorRef.current.getValue()}/>
                 </>
               )
             }
@@ -637,7 +613,7 @@ const ProblemDetailPage = () => {
 
                         <p className="mb-2 text-xs uppercase">Output</p>
 
-                        <pre className={`${resultTest[activeTest].stdout?.trim() === resultTest[activeTest].expected_output?.trim() ? "border-green-500" : "border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
+                        <pre className={`${resultTest[activeTest].stdout == resultTest[activeTest].expected_output ? "border-green-500" : "border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
                           {resultTest.length > 0 ? resultTest[activeTest].stdout
                             : ""}
                         </pre>
@@ -647,7 +623,7 @@ const ProblemDetailPage = () => {
 
                         <p className="mb-2 text-xs uppercase">Expected Output</p>
 
-                        <pre className={`${resultTest[activeTest].stdout?.trim() === resultTest[activeTest].expected_output?.trim() ? "border-green-500" : "border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
+                        <pre className={`${resultTest[activeTest].stdout == resultTest[activeTest].expected_output ? "border-green-500" : "border-red-500"} bg-slate-900/50 p-3 rounded-lg border `}>
                           {resultTest.length > 0 ? resultTest[activeTest].expected_output : ""}
                         </pre>
 
@@ -709,6 +685,7 @@ const ProblemDetailPage = () => {
                 >
                   <HiCloudUpload /> Submit
                 </motion.button>
+
               </div>
             )
           }
